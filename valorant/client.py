@@ -93,8 +93,8 @@ class ValorantClient:
         self,
         event: str,
         *,
-        check: Optional[Callable[..., bool]] = None,
-        timeout: Optional[float] = None,
+        check: Optional[Callable[..., bool]] = MISSING,
+        timeout: Optional[float] = MISSING,
     ) -> Awaitable[asyncio.Future[Any]]:
         """
         Used to wait for a specific event to be called.
@@ -115,10 +115,13 @@ class ValorantClient:
             you are waiting for.
         """
         future = self.loop.create_future()
-        if check is None:
+        if check is MISSING:
             def _check(*args):
                 return True
             check = _check
+            
+        if timeout is MISSING:
+            timeout = None
 
         ev = event.lower()
         try:
@@ -127,7 +130,7 @@ class ValorantClient:
             listeners = []
             self._listeners[ev] = listeners
 
-        listeners.append((future, check))
+        listeners.append((future, check)) # type: ignore
         return asyncio.wait_for(future, timeout)
             
     async def on_error(self, event_method: str, *args: Any, **kwargs: Any) -> None:
