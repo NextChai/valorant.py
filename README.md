@@ -12,17 +12,20 @@ currently it's up to you to find a way to work around them. If you find any bugs
 
 # Code Example
 ```python
-
+import asyncio
 import aiohttp
-from valorant import ValorantClient
+import valorant
 
-async with aiohttp.ClientSession() as session:
-    client = ValorantClient(
-        'your-valorant-client', 
-        session=session
-    )
-    account = await client.fetch_account_by_riot_id('Slix', 'yes')
-    print(account)
-
+async def main():
+    session = aiohttp.ClientSession() 
+    
+    client = valorant.ValorantClient(token='', session=session)
+    agents = await client.fetch_agents()
+    agent = agents[0]
+    
+    new = await client.fetch_agent(agent.uuid)
+    await session.close()
+    
+asyncio.run(main())
 ```
 
