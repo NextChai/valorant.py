@@ -172,7 +172,7 @@ class Agent(Hashable):
     description: :class:`str`
         The agent's description.
     developer_name: :class:`str`
-        The name of the developer who created the agent.
+        The internal name of the agent, used by developers.
     character_tags: :class:`List[str]`
         A list of tags that describe the agent's character.
     display_icon: :class:`Icon`
