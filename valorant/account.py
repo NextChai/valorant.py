@@ -23,42 +23,6 @@ SOFTWARE.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Tuple, Optional
 
-from .abc import Hashable
-
-if TYPE_CHECKING:
-    from .types.dto import AccountDto as AccountDtoPayload
-    from .state import ConnectionState
-    
-
-class AccountDto(Hashable):
-    """
-    Represents a valorant account.
-    """
-    
-    __slots__: Tuple[str, ...] = (
-        '_original',
-        '_state',
-        'puuid',
-        'game_name',
-        'tag_line'
-    )
-    
-    def __init__(self, *, data: AccountDtoPayload, state: ConnectionState) -> None:
-        self._original: AccountDtoPayload = data
-        self._state: ConnectionState = state
-        
-        self._from_data(data=data)
-        
-    def _from_data(self, *, data: AccountDtoPayload) -> None:
-        self.puuid: str = data['puuid']
-        self.game_name: Optional[str] = data.get('gameName')
-        self.tag_line: Optional[str] = data.get('tagLine')
-        
-    async def fetch_matchlists(self):
-        raise NotImplementedError
-    
-    
         
         

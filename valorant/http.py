@@ -31,7 +31,8 @@ import weakref
 from urllib.parse import quote as _uriquote
 
 from typing import (
-    TYPE_CHECKING, 
+    TYPE_CHECKING,
+    Final, 
     Tuple, 
     Union, 
     Any, 
@@ -46,16 +47,11 @@ from types import TracebackType
 
 from . import __version__
 from .utils import _to_json, MISSING, _mis_if_not, json_or_text
-from .enums import PlatformRouting
 from .errors import *
 
 if TYPE_CHECKING:
     from aiohttp import ClientSession
-    
-    from .types import (
-        dto,
-    )
-    
+
     T = TypeVar('T')
     BE = TypeVar('BE', bound=BaseException)
     MU = TypeVar('MU', bound='MaybeUnlock')
@@ -72,44 +68,26 @@ __all__: Tuple[str, ...] = (
 
 # https://github.com/NextChai/chai-discord.py/blob/master/discord/http.py#L113-L122
 class Route:
+    BASE: Final[str] = 'https://valorant-api.com/v1'
     __slots__: Tuple[str, ...] = (
         'method',
         'path',
-        'BASE',
-        '_original_parameters',
-        'url',
-        '_url'
+        'url'
     )
     
     def __init__(self, method: str, path: str, **parameters: Any) -> None:
         self.method: str = method
         self.path: str = path
-        self.BASE: str = PlatformRouting.na.value # Base is here so we can update it
         
-        self._original_parameters: Any = parameters
-        self._url: Optional[str] = None
-        self.url: str = self._make_url()
+        url = self.BASE + self.path
+        if parameters:
+            url = url.format_map({k: _uriquote(v) if isinstance(v, str) else v for k, v in parameters.items()})
+        self.url: str = url
         
     @property
     def bucket(self) -> str:
         # Unlike dpy, we don't have channel, guild, or webhook ids to use so we'll just use path
         return self.path
-    
-    def _make_url(self) -> str:
-        if self._url:
-            return self._url
-        
-        url = self.BASE + self.path
-        if self._original_parameters:
-            url = url.format_map({k: _uriquote(v) if isinstance(v, str) else v for k, v in self._original_parameters.copy().items()})
-        
-        self._url = url
-        return url
-    
-    def _update_base(self, base: PlatformRouting) -> None:
-        # Internally updates the base in case the user does not want to use na1
-        self.BASE = base.value
-        self._url = None
         
 # https://github.com/NextChai/chai-discord.py/blob/master/discord/http.py#L136-L154   
 class MaybeUnlock:
@@ -139,7 +117,6 @@ class HTTPClient:
         '_locks',
         '_global_over',
         'loop',
-        '_base_override',
         'token',
         'user_agent',
         'dispatch'
@@ -152,14 +129,12 @@ class HTTPClient:
         dispatch: Callable[..., None],
         *,
         session: Optional[ClientSession] = MISSING, 
-        base_override: Optional[PlatformRouting] = MISSING,
     ) -> None:
         self.__session: ClientSession = _mis_if_not(session) or aiohttp.ClientSession() # type: ignore
         self._locks: weakref.WeakValueDictionary = weakref.WeakValueDictionary()
         self._global_over: asyncio.Event = asyncio.Event()
         self._global_over.set()
         self.loop: asyncio.AbstractEventLoop = loop
-        self._base_override: Optional[PlatformRouting] = _mis_if_not(base_override)
         self.dispatch: Callable[..., None] = dispatch
         
         self.token: str = token
@@ -175,16 +150,7 @@ class HTTPClient:
     ) -> Any:
         method = route.method
         bucket = route.bucket
-        
-        if (override := kwargs.pop('base_override', None)):
-            route._update_base(override)
-            url = route._make_url()
-        else:
-            if self._base_override is not None and self._base_override is not PlatformRouting.na1:
-                route._update_base(self._base_override)
-                url = route._make_url()
-            else:
-                url = route.url
+        url = route.url
     
         lock = self._locks.get(bucket)
         if lock is None:
@@ -195,7 +161,7 @@ class HTTPClient:
         # header creation
         headers: Dict[str, str] = {
             'User-Agent': self.user_agent,
-            'X-Riot-Token': self.token
+            'Authorization': self.token
         }
         
         # some checking if it's a JSON request
@@ -268,44 +234,6 @@ class HTTPClient:
                 raise HTTPException(response, data)
             
             raise RuntimeError('Unreachable code in HTTP handling')
-        
-    def get_account_by_puuid(self, puuid: str, **kwargs) -> Response[dto.AccountDto]:
-        r = Route('GET', '/riot/account/v1/accounts/by-puuid/{puuid}', puuid=puuid)
-        return self.request(r, **kwargs)
     
-    def get_account_by_riot_id(self, game_name: str, tag_line: str, **kwargs) -> Response[dto.AccountDto]:
-        r = Route('GET', '/riot/account/v1/accounts/by-riot-id/{game_name}/{tag_line}', game_name=game_name, tag_line=tag_line)
-        return self.request(r, **kwargs)
     
-    def get_account_me(self, **kwargs) -> Response[dto.AccountDto]:
-        r = Route('GET', '/riot/account/v1/accounts/me')
-        return self.request(r, **kwargs)
-    
-    def get_active_shards_by_name(self, game: str, puuid: str) -> Response[dto.ActiveShardDto]:
-        r = Route('GET', '/riot/account/v1/active-shards/by-game/{game}/by-puuid/{puuid}', game=game, puuid=puuid)
-        return self.request(r)
-
-    def get_contents(self) -> Response[dto.ContentDto]:
-        r = Route('GET', '/val/content/v1/contents')
-        return self.request(r)
-    
-    def get_match_from_id(self, match_id: str) -> Response[dto.MatchDto]:
-        r = Route('GET', '/val/match/v1/matches/{match_id}', match_id=match_id)
-        return self.request(r)
-
-    def get_matchlists_from_puuid(self, puuid: str) -> Response[dto.MatchlistDto]:
-        r = Route('GET', '/val/match/v1/matchlists/by-puuid/{puuid}', puuid=puuid)
-        return self.request(r)
-    
-    def get_recent_matches_by_queue(self, queue: str) -> Response[dto.RecentMatchesDto]:
-        r = Route('GET', '/val/match/v1/recent-matches/by-queue/{queue}', queue=queue)
-        return self.request(r)
-    
-    def get_leaderboards_by_act(self, act_id: str) -> Response[dto.LeaderboardDto]:
-        r = Route('GET', '/val/ranked/v1/leaderboards/by-act/{act_id}', act_id=act_id)
-        return self.request(r)
-    
-    def get_platform_data(self) -> Response[dto.PlatformDataDto]:
-        r = Route('GET', '/val/status/v1/platform-data')
-        return self.request(r)
     

@@ -29,22 +29,7 @@ from typing import Callable, Tuple
 from enum import Enum 
 
 __all__: Tuple[str, ...] = (
-    'PlatformRouting',
+    
 )
 
-_format_route: Callable[[str], str] = lambda route: f'https://{route}.api.riotgames.com'
 
-class PlatformRouting(Enum):
-    br1 = _format_route('br1')
-    eun1 = _format_route('eun1')
-    euw1 = _format_route('euw1')
-    jp1 = _format_route('jp1')
-    kr = _format_route('kr')
-    la1 = _format_route('la1')
-    la2 = _format_route('la2')
-    na1 = _format_route('na1')
-    na = _format_route('na')
-    oc1 = _format_route('oc1')
-    tri = _format_route('tri')
-    ru = _format_route('ru')
-    americas = _format_route('americas')

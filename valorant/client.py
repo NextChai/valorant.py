@@ -33,8 +33,6 @@ from valorant.state import ConnectionState
 
 from .http import HTTPClient
 from .utils import MISSING, _mis_if_not
-from .enums import PlatformRouting
-from .account import AccountDto
 
 if TYPE_CHECKING:
     from aiohttp import ClientSession
@@ -54,17 +52,12 @@ class ValorantClient:
         *,
         session: Optional[ClientSession] = MISSING,
         loop: Optional[AbstractEventLoop] = MISSING,
-        base_override: Optional[PlatformRouting] = MISSING,
-        optimized: Optional[bool] = MISSING
     ) -> None:
-        self.optimized: bool = _mis_if_not(optimized, False) # type: ignore
-        
         self.loop = loop = loop or asyncio.get_event_loop()
-        self.http: HTTPClient = HTTPClient(token, loop, self.dispatch, session=session, base_override=base_override)
-        self._connection: ConnectionState = ConnectionState(dispatch=self.dispatch, optimized=optimized) # type: ignore
+        self.http: HTTPClient = HTTPClient(token, loop, self.dispatch, session=session)
+        self._connection: ConnectionState = ConnectionState(dispatch=self.dispatch) 
         
         self._listeners: Dict[str, List[Tuple[asyncio.Future, Callable[..., bool]]]] = {}
-        self.user: Optional[AccountDto] = None
         
     # Listeners
     def event(self, coro: Coroutine[Any, Any, Any]) -> Coroutine[Any, Any, Any]:
@@ -168,24 +161,4 @@ class ValorantClient:
             pass
         else:
             self._schedule_event(coro, method, *args, **kwargs)
-    
-    async def fetch_account_by_puuid(self, puuid: str) -> AccountDto:
-        account = self._connection._get_account(puuid)
-        if account:
-            return account
-            
-        data = await self.http.get_account_by_puuid(puuid, base_override=PlatformRouting.americas)
-        return self._connection._store_account(data)
-    
-    async def fetch_account_by_riot_id(self, game_name: str, riot_id: str) -> AccountDto:
-        data = await self.http.get_account_by_riot_id(game_name, riot_id, base_override=PlatformRouting.americas)
-        return self._connection._store_account(data)
-    
-    async def fetch_client_user(self) -> AccountDto:
-        if self.user:
-            return self.user
-        
-        data = await self.http.get_account_me()
-        return self._connection._store_account(data)
-    
     

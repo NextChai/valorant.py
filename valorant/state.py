@@ -31,43 +31,36 @@ if TYPE_CHECKING:
     from .http import HTTPClient
     from .client import ValorantClient
     
-    from .types.dto import (
-        AccountDto as AccountDtoPayload
-    )
-    
 CSO = TypeVar('CSO', bound='Union[HTTPClient, ValorantClient]')
 
 
 class ConnectionState(Generic[CSO]):
     __slots__: Tuple[str, ...] = (
         'dispatch',
-        'optimized',
-        '_accounts'
     )
     
-    def __init__(self, dispatch: Callable[..., Any], optimized: bool) -> None:
+    def __init__(self, dispatch: Callable[..., Any]) -> None:
         self.dispatch: Callable[..., Any] = dispatch
-        self.optimized: bool = optimized
-        self._load_cache()
+        #self._load_cache()
         
-    def _load_cache(self) -> None:
-        self._accounts: Dict[str, AccountDto] = {}
-        
-    def _clear_cache(self) -> None:
-        self._accounts = {}
-    
-    def _store_account(self, data: AccountDtoPayload) -> AccountDto:
-        account = AccountDto(data=data, state=self)
-        self._accounts[account.puuid] = account
-        
-        if not self.optimized:
-            self.dispatch('cache_entry', account)
-        
-        return account
-    
-    def _get_account(self, puuid: str) -> Optional[AccountDto]:
-        return self._accounts.get(puuid)
-    
-    def _remove_account(self, puuid: str) -> Optional[AccountDto]:
-        return self._accounts.pop(puuid, None)
+    #def _load_cache(self) -> None:
+    #    self._accounts: Dict[str, AccountDto] = {}
+    #    
+    #def _clear_cache(self) -> None:
+    #    self._accounts = {}
+    #
+    #def _store_account(self, data: AccountDtoPayload) -> AccountDto:
+    #    account = AccountDto(data=data, state=self)
+    #    self._accounts[account.puuid] = account
+    #    
+    #    if not self.optimized:
+    #        self.dispatch('cache_entry', account)
+    #    
+    #    return account
+    #
+    #def _get_account(self, puuid: str) -> Optional[AccountDto]:
+    #    return self._accounts.get(puuid)
+    #
+    #def _remove_account(self, puuid: str) -> Optional[AccountDto]:
+    #    return self._accounts.pop(puuid, None)
     
