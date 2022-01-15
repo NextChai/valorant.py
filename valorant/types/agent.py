@@ -23,14 +23,14 @@ SOFTWARE.
 """
 from __future__ import annotations
 
-from typing import List, TypedDict
+from typing import List, TypedDict, Optional
 
 
 class AgentRole(TypedDict):
     uuid: str
     displayName: str
     description: str
-    displayIcon: str
+    displayIcon: Optional[str]
     assetPath: str
     
     
@@ -38,7 +38,7 @@ class AgentAbility(TypedDict):
     slot: str
     displayName: str
     description: str
-    displayIcon: str
+    displayIcon: Optional[str]
     
 
 class AgentMedia(TypedDict):
@@ -59,12 +59,12 @@ class Agent(TypedDict):
     description: str
     developerName: str
     characterTags: List[str]
-    displayIcon: str
-    displayIconSmall: str
-    bustPortrait: str
-    fullPortrait: str
-    killfeedPortrait: str
-    background: str
+    displayIcon: Optional[str]
+    displayIconSmall: Optional[str]
+    bustPortrait: Optional[str]
+    fullPortrait: Optional[str]
+    killfeedPortrait: Optional[str]
+    background: Optional[str]
     assetPath: str
     isFullPortraitRightFacing: bool
     isPlayableCharacter: bool
