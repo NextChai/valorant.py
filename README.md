@@ -14,6 +14,7 @@ currently it's up to you to find a way to work around them. If you find any bugs
 ```python
 
 import aiohttp
+from valorant import ValorantClient
 
 async with aiohttp.ClientSession() as session:
     client = ValorantClient(
