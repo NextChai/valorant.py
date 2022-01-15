@@ -39,7 +39,7 @@ class Hashable:
         if id is not None:
             return id
         
-        return getattr(self, 'puuid')
+        return getattr(self, 'uuid')
     
     def __eq__(self, _o: object) -> bool:
         return isinstance(_o, self.__class__) and self.id == _o.id
