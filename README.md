@@ -1,5 +1,5 @@
 # valorantpy
-The async wrapper for the Valorant APi.
+The async wrapper for the Valorant API.
 
 # Features
 - [x] Memory optimized efficient wrapper for the valorant API.
