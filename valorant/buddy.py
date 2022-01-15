@@ -114,3 +114,4 @@ class Buddy(Hashable):
         self.display_icon: Optional[Icon] = Icon._from_url(icon) if (icon := data['displayIcon']) else None
         self.asset_path: str = data['assetPath']
         self.levels: List[BuddyLevel] = [BuddyLevel(data=level, state=state) for level in data['levels']]
+        
