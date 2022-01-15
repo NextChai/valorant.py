@@ -23,43 +23,87 @@ SOFTWARE.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Optional, Tuple, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Optional, Tuple, TypeVar, TypedDict, Union, Type
 
 from .agent import Agent
+from .buddy import Buddy, BuddyLevel
 
 if TYPE_CHECKING:
     from .http import HTTPClient
     from .client import ValorantClient
     
     from .types.agent import Agent as AgentPayload
+    from .types.buddy import (
+        Buddy as BuddyPayload,
+    )
     
 CSO = TypeVar('CSO', bound='Union[HTTPClient, ValorantClient]')
+T = TypeVar('T')
 
+
+# Although this is a bit hacky, it will save me from
+# writing hundreds of lines of code, all I will have to do
+# to make pyright happy is specify the callable in the 
+# type checking part of ConnectionState.
+def cache_management_for(
+    instance: ConnectionState[CSO], 
+    var_name: str,
+    function_name: str,
+    type: Type[T] # type: ignore
+):
+    setattr(instance, var_name, {})
+    
+    def _get_cache(uuid: str) -> Optional[T]:
+        return getattr(instance, var_name).get(uuid)
+
+    def _remove_cache(uuid: str) -> Optional[T]:
+        return getattr(instance, var_name).pop(uuid, None)
+    
+    def _store_cache(data) -> T:
+        try:
+            return getattr(instance, var_name)[data['uuid']]
+        except KeyError:
+            new = type(data=data, state=instance)
+            getattr(instance, var_name)[new.uuid] = new
+            return new
+        
+    setattr(instance, f'_get_{function_name}', _get_cache)
+    setattr(instance, f'_remove_{function_name}', _remove_cache)
+    setattr(instance, f'_store_{function_name}', _store_cache)
+    
 
 class ConnectionState(Generic[CSO]):
-    __slots__: Tuple[str, ...] = (
-        'dispatch',
-        '_agents'
-    )
+    if TYPE_CHECKING:
+        _store_agent: Callable[[AgentPayload], Agent]
     
     def __init__(self, dispatch: Callable[..., Any]) -> None:
         self.dispatch: Callable[..., Any] = dispatch
         self._load_cache()
         
+        cache_management_for(self, '_agents', 'agent', Agent)
+        cache_management_for(self, '_buddies', 'buddy', Buddy)
+        cache_management_for(self, '_buddy_levels', 'buddy_levels', BuddyLevel)
+        
     def _load_cache(self) -> None:
         self._agents: Dict[str, Agent] = {}
+        self._buddies: Dict[str, Buddy] = {}
+        self._buddy_levels: Dict[str, BuddyLevel] = {}
         
     def _clear_cache(self) -> None:
         self._agents = {}
-    
-    def _store_agent(self, data: AgentPayload) -> Agent:
-        account = Agent(data=data, state=self)
-        self._agents[account.uuid] = account
-        return account
-    
-    def _get_agent(self, uuid: str) -> Optional[Agent]:
-        return self._agents.get(uuid)
-    
-    def _remove_agent(self, uuid: str) -> Optional[Agent]:
-        return self._agents.pop(uuid, None)
-    
+        self._buddies = {}
+        self._buddy_levels = {}
+
+    def _store_buddy(self, data: BuddyPayload) -> Buddy:
+        try:
+            return self._buddies[data['uuid']]
+        except KeyError:
+            buddy = Buddy(data=data, state=self)
+            self._buddies[buddy.uuid] = buddy
+            
+            if buddy.levels:
+                for level in buddy.levels:
+                    if level.uuid not in self._buddy_levels:
+                        self._buddy_levels[level.uuid] = level
+
+            return buddy
