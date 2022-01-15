@@ -39,6 +39,7 @@ if TYPE_CHECKING:
     from asyncio import AbstractEventLoop
     
     from .agent import Agent
+    from .enums import Language
 
 log = logging.getLogger('valorant.client')
 
@@ -165,11 +166,11 @@ class ValorantClient:
             self._schedule_event(coro, method, *args, **kwargs)
     
     # Methods
-    async def fetch_agents(self) -> List[Agent]:
-        agents_data = await self.http.get_agents()
+    async def fetch_agents(self, *, language: Optional[Language] = MISSING, is_playable_character: Optional[bool] = MISSING) -> List[Agent]:
+        agents_data = await self.http.get_agents(language=language, is_playable_character=is_playable_character)    
         return [self._connection._store_agent(agent_data) for agent_data in agents_data]
 
-    async def fetch_agent(self, uuid: str):
-        agent = await self.http.get_agent_by_uuid(uuid)
+    async def fetch_agent(self, uuid: str, *, language: Optional[Language] = MISSING) -> Agent:
+        agent = await self.http.get_agent_by_uuid(uuid, language=language)
         return self._connection._store_agent(agent)
     
