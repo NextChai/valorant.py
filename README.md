@@ -3,6 +3,9 @@ The async wrapper for the Valorant API.
 
 # Features
 - [x] Memory optimized efficient wrapper for the valorant API.
+- [x] Complete API coverage.
+- [x] Async/await support.
+- [x] Support for an in depth cache system, allowing for the optimization of API calls.
 
 # Please note
 This library is undergoing heavy changes and is not recommended for use yet. There are many
