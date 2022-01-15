@@ -138,8 +138,8 @@ class AgentRole(Hashable):
         The name of the role.
     description: :class:`str`
         The description of the role.
-    display_icon: :class:`Icon`
-        The icon of the role.
+    display_icon: Optional[:class:`Icon`]
+        The icon of the role, if found.
     asset_path: :class:`str`
         The path to the role's asset.
     """
@@ -155,7 +155,7 @@ class AgentRole(Hashable):
         self.uuid: str = data['uuid']
         self.display_name: str = data['displayName']
         self.description: str = data['description']
-        self.display_icon: Icon = Icon._from_url(data['displayIcon'])
+        self.display_icon: Optional[Icon] = Icon._from_url(icon) if (icon := data['displayIcon']) else None
         self.asset_path: str = data['assetPath']
         
         
