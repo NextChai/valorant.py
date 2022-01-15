@@ -24,8 +24,7 @@ SOFTWARE.
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterable, Optional, Tuple, TypeVar, Union
-from typing_extensions import ParamSpec
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Optional, Tuple, TypeVar, Union
 
 try:
     import orjson
@@ -39,7 +38,7 @@ if TYPE_CHECKING:
 
 T = TypeVar('T')
 O = TypeVar('O')
-P = ParamSpec('P')
+    
     
 __all__: Tuple[str, ...] = (
     '_to_json',
@@ -47,7 +46,7 @@ __all__: Tuple[str, ...] = (
     'MISSING',
     '_mis_if_not',
     'add_logging',
-    'json_or_text'
+    'json_or_text',
 )
 
      
@@ -78,10 +77,11 @@ class _MissingSentinel:
 
 MISSING: Any = _MissingSentinel()
 
+
 def _mis_if_not(object: T, fallback: Optional[O] = None) -> Optional[Union[O, T]]:
     return object if object is not MISSING else fallback
 
-def add_logging(func: Callable[P, Union[Awaitable[T], T]]) -> Callable[P, Union[Awaitable[T], T]]:
+def add_logging(func: Callable[..., Union[Awaitable[T], T]]) -> Callable[..., Union[Awaitable[T], T]]:
     """
     Used to add logging to a coroutine or function.
     
@@ -104,11 +104,11 @@ def add_logging(func: Callable[P, Union[Awaitable[T], T]]) -> Callable[P, Union[
         print(result)
         >>> 3
     """
-    async def _async_wrapped(*args: P.args, **kwargs: P.kwargs):
+    async def _async_wrapped(*args, **kwargs):
         result = await func(*args, **kwargs)  # type: ignore
         return result
     
-    def _sync_wrapped(*args: P.args, **kwargs: P.kwargs):
+    def _sync_wrapped(*args, **kwargs):
         result = func(*args, **kwargs)
         return result
     
