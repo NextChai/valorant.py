@@ -27,6 +27,11 @@ import asyncio
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Optional, Tuple, TypeVar, Union
 
 try:
+    from typing import ParamSpec
+except ImportError:
+    from typing_extensions import ParamSpec
+
+try:
     import orjson
 except ModuleNotFoundError:
     HAS_ORJSON = False
@@ -38,6 +43,7 @@ if TYPE_CHECKING:
 
 T = TypeVar('T')
 O = TypeVar('O')
+P = ParamSpec('P')
     
     
 __all__: Tuple[str, ...] = (
@@ -81,7 +87,7 @@ MISSING: Any = _MissingSentinel()
 def _mis_if_not(object: T, fallback: Optional[O] = None) -> Optional[Union[O, T]]:
     return object if object is not MISSING else fallback
 
-def add_logging(func: Callable[..., Union[Awaitable[T], T]]) -> Callable[..., Union[Awaitable[T], T]]:
+def add_logging(func: Callable[P, Union[Awaitable[T], T]]) -> Callable[P, Union[Awaitable[T], T]]:
     """
     Used to add logging to a coroutine or function.
     
@@ -104,13 +110,13 @@ def add_logging(func: Callable[..., Union[Awaitable[T], T]]) -> Callable[..., Un
         print(result)
         >>> 3
     """
-    async def _async_wrapped(*args, **kwargs):
+    async def _async_wrapped(*args: P.args, **kwargs: P.kwargs) -> Awaitable[T]:
         result = await func(*args, **kwargs)  # type: ignore
-        return result
+        return result # type: ignore
     
-    def _sync_wrapped(*args, **kwargs):
+    def _sync_wrapped(*args: P.args, **kwargs: P.kwargs) -> T:
         result = func(*args, **kwargs)
-        return result
+        return result # type: ignore
     
     return _async_wrapped if asyncio.iscoroutinefunction(func) else _sync_wrapped # type: ignore
 
