@@ -23,7 +23,7 @@ SOFTWARE.
 """
 from __future__ import annotations
 
-from typing import TypedDict, Optional
+from typing import List, TypedDict, Optional
 
 
 class BuddyLevel(TypedDict):
@@ -41,4 +41,4 @@ class Buddy(TypedDict):
     themeUuid: str
     displayIcon: str
     assetPath: str
-    
+    levels: List[BuddyLevel]

@@ -56,7 +56,8 @@ if TYPE_CHECKING:
     from aiohttp import ClientSession
     
     from .types import (
-        agent
+        agent,
+        buddy
     )
 
     T = TypeVar('T')
@@ -259,4 +260,37 @@ class HTTPClient:
             payload['language'] = language.value # type: ignore
             
         return self.request(Route('GET', f'/agents/{uuid}'), json=payload)
+    
+    def get_buddies(self, *, language: Optional[Language] = MISSING) -> Response[List[buddy.Buddy]]:
+        payload = {}
+        
+        if language is not MISSING:
+            payload['language'] = language.value # type: ignore
+        
+        return self.request(Route('GET', '/buddies'), json=payload)
+    
+    def get_buddy_by_uuid(self, uuid: str, *, language: Optional[Language] = MISSING) -> Response[buddy.Buddy]:
+        payload = {}
+        
+        if language is not MISSING:
+            payload['language'] = language.value # type: ignore
+            
+        return self.request(Route('GET', f'/buddies/{uuid}'), json=payload)
+    
+    def get_buddy_levels(self, *, language: Optional[Language] = MISSING) -> Response[List[buddy.BuddyLevel]]:
+        payload = {}
+        
+        if language is not MISSING:
+            payload['language'] = language.value # type: ignore
+        
+        return self.request(Route('GET', '/buddies/levels'), json=payload)
+    
+    def get_buddy_level_by_uuid(self, uuid: str, *, language: Optional[Language] = MISSING) -> Response[buddy.BuddyLevel]:
+        payload = {}
+        
+        if language is not MISSING:
+            payload['language'] = language.value # type: ignore
+            
+        return self.request(Route('GET', f'/buddies/levels/{uuid}'), json=payload)
+    
     

@@ -40,6 +40,7 @@ if TYPE_CHECKING:
     
     from .agent import Agent
     from .enums import Language
+    from .buddy import Buddy, BuddyLevel
 
 log = logging.getLogger('valorant.client')
 
@@ -249,4 +250,7 @@ class ValorantClient:
         """
         agent = await self.http.get_agent_by_uuid(uuid, language=language)
         return self._connection._store_agent(agent)
+    
+    async def fetch_buddies(self) -> None:
+        pass
     
