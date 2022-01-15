@@ -219,7 +219,7 @@ class ValorantClient:
     async def fetch_agents(self, *, language: Optional[Language] = MISSING, is_playable_character: Optional[bool] = MISSING) -> List[Agent]:
         """|coro|
         
-        Fetch all agents from the Valorant API. This is an api call regardless of chunking agents on startup.
+        Fetch all agents.
         
         Parameters
         ----------
@@ -239,7 +239,7 @@ class ValorantClient:
     async def fetch_agent(self, uuid: str, *, language: Optional[Language] = MISSING) -> Agent:
         """|coro|
         
-        Used to fetch an agent from the Valorant API.
+        Used to fetch an agent.
         
         Parameters
         ----------
@@ -248,9 +248,46 @@ class ValorantClient:
         language: Optional[:class:`Language`]
             The language you wish to fetch the agent in.
         """
-        agent = await self.http.get_agent_by_uuid(uuid, language=language)
+        agent = await self.http.get_agent(uuid, language=language)
         return self._connection._store_agent(agent)
     
-    async def fetch_buddies(self) -> None:
-        pass
+    async def fetch_buddies(self, *, language: Optional[Language] = MISSING) -> List[Buddy]:
+        """|coro|
+        
+        Used to fetch all buddies.
+        
+        Paramerers
+        ----------
+        language: Optional[:class:`Language`]
+            The language you wish to fetch the buddy in.
+        
+        Returns
+        -------
+        List[:class:`Buddy`]
+            A list of buddies.
+        """
+        buddies_data = await self.http.get_buddies(language=language)
+        return [self._connection._store_buddy(buddy) for buddy in buddies_data]
+    
+    async def fetch_buddy(self, uuid: str, *, language: Optional[Language] = MISSING) -> Buddy:
+        """|coro|
+        
+        Used to fetch a buddy from it's uuid.
+        
+        Parameters
+        ----------
+        uuid: :class:`str`
+            The UUID of the buddy you wish to fetch.
+        language: Optional[:class:`Language`]
+            The language you wish to fetch the buddy in.
+            
+        Returns
+        -------
+        :class:`Buddy`
+            The buddy that was fetched,
+        """
+        buddy = await self.http.get_buddy(uuid, language=language)
+        return self._connection._store_buddy(buddy)
+    
+    
     

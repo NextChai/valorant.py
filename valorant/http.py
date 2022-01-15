@@ -253,7 +253,7 @@ class HTTPClient:
         
         return self.request(Route('GET', '/agents'), json=payload)
     
-    def get_agent_by_uuid(self, uuid: str, *, language: Optional[Language] = MISSING) -> Response[agent.Agent]:
+    def get_agent(self, uuid: str, *, language: Optional[Language] = MISSING) -> Response[agent.Agent]:
         payload = {}
         
         if language is not MISSING:
@@ -269,7 +269,7 @@ class HTTPClient:
         
         return self.request(Route('GET', '/buddies'), json=payload)
     
-    def get_buddy_by_uuid(self, uuid: str, *, language: Optional[Language] = MISSING) -> Response[buddy.Buddy]:
+    def get_buddy(self, uuid: str, *, language: Optional[Language] = MISSING) -> Response[buddy.Buddy]:
         payload = {}
         
         if language is not MISSING:
@@ -285,7 +285,7 @@ class HTTPClient:
         
         return self.request(Route('GET', '/buddies/levels'), json=payload)
     
-    def get_buddy_level_by_uuid(self, uuid: str, *, language: Optional[Language] = MISSING) -> Response[buddy.BuddyLevel]:
+    def get_buddy_level(self, uuid: str, *, language: Optional[Language] = MISSING) -> Response[buddy.BuddyLevel]:
         payload = {}
         
         if language is not MISSING:
