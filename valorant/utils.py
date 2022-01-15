@@ -46,7 +46,6 @@ __all__: Tuple[str, ...] = (
     '_from_json',
     'MISSING',
     '_mis_if_not',
-    'sane_any',
     'add_logging',
     'json_or_text'
 )
@@ -81,18 +80,6 @@ MISSING: Any = _MissingSentinel()
 
 def _mis_if_not(object: T, fallback: Optional[O] = None) -> Optional[Union[O, T]]:
     return object if object is not MISSING else fallback
-    
-    
-def sane_any(iterable: Iterable[Any]) -> bool:
-    """
-    Used to sanely check an iterable. Using `any` is not good,
-    as it will check all items in the list before returning a value
-    """
-    for item in iterable:
-        if item:
-            return True
-    
-    return False
 
 def add_logging(func: Callable[P, Union[Awaitable[T], T]]) -> Callable[P, Union[Awaitable[T], T]]:
     """
