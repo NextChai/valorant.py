@@ -48,6 +48,18 @@ __all__: Tuple[str, ...] = (
 
 
 class AgentMedia(Hashable):
+    """
+    Reprenents an :class:`Agent`'s voice line.
+    
+    Attributes
+    ----------
+    id: :class:`int`
+        The ID of the voice line.
+    wwise: :class:`str`
+        The ``wem`` downlaod link for the voice line.
+    wave: :class:`str`
+        the ``wav`` download link for the voice line.
+    """
     __slots__: Tuple[str, ...] = (
         'id',
         'wwise',
@@ -61,6 +73,18 @@ class AgentMedia(Hashable):
 
 
 class AgentVoiceLine:
+    """
+    Represents the voice line information of an :class:`Agent`.
+    
+    Attributes
+    ----------
+    min_duration: float
+        The minimum duration of a voice line.
+    max_duration: float
+        The maximum duration of a voice line.
+    media: List[:class:`AgentMedia`]
+        The list of voice lines that the agent has.
+    """
     __slots__: Tuple[str, ...] = (
         'min_duration', 
         'max_duration', 
@@ -74,6 +98,20 @@ class AgentVoiceLine:
 
 
 class AgentAbility:
+    """
+    Represents an ability of an :class:`Agent`.
+    
+    Attributes
+    ----------
+    slot: :class:`str`
+        The slot that the ability is in.
+    display_name: :class:`str`
+        The display name of the ability.
+    description: :class:`str`
+        The description of the ability.
+    display_icon: :class:`Icon`
+        The display icon of the ability.
+    """
     __slots__: Tuple[str, ...] = (
         'slot', 
         'display_name', 
@@ -89,10 +127,27 @@ class AgentAbility:
 
 
 class AgentRole(Hashable):
+    """
+    Represents the role an :class:`Agent` plays in the game.
+    
+    Attributes
+    ----------
+    uuid: :class:`str`
+        The unique identifier of the role.
+    display_name: :class:`str`
+        The name of the role.
+    description: :class:`str`
+        The description of the role.
+    display_icon: :class:`Icon`
+        The icon of the role.
+    asset_path: :class:`str`
+        The path to the role's asset.
+    """
     __slots__: Tuple[str, ...] = (
         'uuid',
         'display_name',
         'description',
+        'display_icon',
         'asset_path'
     )
     
@@ -100,10 +155,55 @@ class AgentRole(Hashable):
         self.uuid: str = data['uuid']
         self.display_name: str = data['displayName']
         self.description: str = data['description']
+        self.display_icon: Icon = Icon._from_url(data['displayIcon'])
         self.asset_path: str = data['assetPath']
         
         
 class Agent(Hashable):
+    """
+    Represents an agent with Valorant.
+    
+    Attributes
+    ----------
+    uuid: :class:`str`
+        The agent's UUID.
+    display_name: :class:`str`
+        The agent's display name.
+    description: :class:`str`
+        The agent's description.
+    developer_name: :class:`str`
+        The name of the developer who created the agent.
+    character_tags: :class:`List[str]`
+        A list of tags that describe the agent's character.
+    display_icon: :class:`Icon`
+        The agent's display icon.
+    display_icon_small: :class:`Icon`
+        A smaller version of the agent's display icon.
+    bust_portrait: :class:`Icon`
+        The agent's bust portrait.
+    full_portrait: :class:`Icon`
+        A full portrait of the agent.
+    kill_feed_portrait: :class:`Icon`
+        The icon that shows up in the kill feed.
+    background: :class:`Icon`
+        The backhround of the agent's profile.
+    asset_path: :class:`str`
+        The path to the agent's asset.
+    is_full_portrait_right_facing: :class:`bool`
+        Whether the agent's full portrait is facing right.
+    is_playable_character: :class:`bool`
+        Whether the agent is a playable character.
+    is_available_for_test: :class:`bool`
+        Whether the agent is available for testing.
+    is_base_content: :class:`bool`
+        Whether the agent is a base content.
+    role: :class:`AgentRole`
+        The agent's role. Basically an explanation of what the agent's role is.
+    abilities: :class:`List[AgentAbility]`
+        A list of abilities that the agent has.
+    voice_line: :class:`List[AgentVoiceLine]`
+        The agent's voice line. View individual voice lines in :class:`AgentMedia`.
+    """
     __slots__: Tuple[str, ...] = (
         'uuid', 
         'display_name', 
