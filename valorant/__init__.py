@@ -28,6 +28,7 @@ __author__ = 'NextChai'
 
 from .abc import *
 from .agent import *
+from .buddy import *
 from .client import *
 from .enums import *
 from .errors import *
