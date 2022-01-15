@@ -23,6 +23,53 @@ SOFTWARE.
 """
 from __future__ import annotations
 
+from typing import List, TypedDict
 
-        
-        
+
+class AgentRole(TypedDict):
+    uuid: str
+    displayName: str
+    description: str
+    displayIcon: str
+    assetPath: str
+    
+    
+class AgentAbility(TypedDict):
+    slot: str
+    displayName: str
+    description: str
+    displayIcon: str
+    
+
+class AgentMedia(TypedDict):
+    id: int
+    wwise: str
+    wave: str
+    
+    
+class AgentVoiceLine(TypedDict):
+    minDuration: float
+    maxDuration: float
+    mediaList: List[AgentMedia]
+    
+
+class Agent(TypedDict):
+    uuid: str
+    displayName: str
+    description: str
+    developerName: str
+    characterTags: List[str]
+    displayIcon: str
+    displayIconSmall: str
+    bustPortrait: str
+    fullPortrait: str
+    killfeedPortrait: str
+    background: str
+    assetPath: str
+    isFullPortraitRightFacing: bool
+    isPlayableCharacter: bool
+    isAvailableForTest: bool
+    isBaseContent: bool
+    role: AgentRole
+    abilities: List[AgentAbility]
+    voiceLine: AgentVoiceLine

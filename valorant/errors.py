@@ -52,9 +52,6 @@ __all__: Tuple[str, ...] = (
 #     |-- InternalServerError
 #     `-- ServiceUnavailable
 
-
-
-
 class ValorantError(Exception):
     """
     Base class for all exceptions raised by this package.
@@ -83,9 +80,22 @@ class HTTPException(ValorantError):
     data: Optional[Union[:class:`dict`, :class:`str`]]
         The response data, if any.
     """
-    def __init__(self, response: ClientResponse, data: Optional[Union[Dict[str, Any], str]]) -> None:
+    __slots__: Tuple[str, ...] = (
+        'response',
+        'data',
+        'message'
+    )
+    
+    def __init__(
+        self, 
+        response: ClientResponse,
+        data: Optional[Union[Dict[str, Any], str]],
+        *,
+        message: Optional[str] = None
+    ) -> None:
         self.response: ClientResponse = response
         self.data: Optional[Union[Dict[str, Any], str]] = data
+        self.message: Optional[str] = message
 
 
 class BadRequest(HTTPException):
@@ -156,9 +166,7 @@ class InternalServerError(HTTPException):
     This error indicates an unexpected condition or exception which 
     prevented the server from fulfilling an API request.
     """
-    def __init__(self, response: ClientResponse, data: Optional[Union[Dict[str, Any], str]]) -> None:
-        self.response: ClientResponse = response
-        self.data: Optional[Union[Dict[str, Any], str]] = data
+    pass
 
 
 class ServiceUnavailable(HTTPException):

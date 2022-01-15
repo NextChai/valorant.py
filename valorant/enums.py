@@ -29,7 +29,27 @@ from typing import Callable, Tuple
 from enum import Enum 
 
 __all__: Tuple[str, ...] = (
-    
+    'Language',
 )
 
 
+class Language(Enum):
+    arAE = 'ar-AE'
+    deDE = 'de-DE'
+    enES = 'en-ES'
+    esMX = 'es-MX'
+    frFR = 'fr-FR'
+    idID = 'id-ID'
+    itIT = 'it-IT'
+    jaJP = 'ja-JP'
+    koKR = 'ko-KR'
+    plPL = 'pl-PL'
+    ptBR = 'pt-BR'
+    ruRU = 'ru-RU'
+    thTH = 'th-TH'
+    trTR = 'tr-TR'
+    viVN = 'vi-VN'
+    zhCN = 'zh-CN'
+    zhTW = 'zh-TW'
+    
+    

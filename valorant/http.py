@@ -41,16 +41,23 @@ from typing import (
     Coroutine,
     Type,
     Dict,
-    Callable
+    Callable, 
+    List
 )
 from types import TracebackType
 
 from . import __version__
 from .utils import _to_json, MISSING, _mis_if_not, json_or_text
 from .errors import *
+from .enums import Language
+
 
 if TYPE_CHECKING:
     from aiohttp import ClientSession
+    
+    from .types import (
+        agent
+    )
 
     T = TypeVar('T')
     BE = TypeVar('BE', bound=BaseException)
@@ -236,4 +243,21 @@ class HTTPClient:
             raise RuntimeError('Unreachable code in HTTP handling')
     
     
+    def get_agents(self, *, language: Optional[Language] = MISSING, is_playable_character: Optional[bool] = MISSING) -> Response[List[agent.Agent]]:
+        payload = {}
+        
+        if language is not MISSING:
+            payload['language'] = language.value # type: ignore
+        if is_playable_character is not MISSING:
+            payload['is_playable_character'] = is_playable_character
+        
+        return self.request(Route('GET', '/agents'), json=payload)
+    
+    def get_agent_by_uuid(self, uuid: str, *, language: Optional[Language] = MISSING) -> Response[agent.Agent]:
+        payload = {}
+        
+        if language is not MISSING:
+            payload['language'] = language.value # type: ignore
+            
+        return self.request(Route('GET', f'/agents/{uuid}'), json=payload)
     

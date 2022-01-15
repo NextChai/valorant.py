@@ -29,14 +29,16 @@ import traceback
 import asyncio
 from typing import TYPE_CHECKING, Optional, List, Dict, Callable, Tuple, Coroutine, Any, Awaitable
 
-from valorant.state import ConnectionState
 
 from .http import HTTPClient
-from .utils import MISSING, _mis_if_not
+from .utils import MISSING
+from .state import ConnectionState
 
 if TYPE_CHECKING:
     from aiohttp import ClientSession
     from asyncio import AbstractEventLoop
+    
+    from .agent import Agent
 
 log = logging.getLogger('valorant.client')
 
@@ -161,4 +163,13 @@ class ValorantClient:
             pass
         else:
             self._schedule_event(coro, method, *args, **kwargs)
+    
+    # Methods
+    async def fetch_agents(self) -> List[Agent]:
+        agents_data = await self.http.get_agents()
+        return [self._connection._store_agent(agent_data) for agent_data in agents_data]
+
+    async def fetch_agent(self, uuid: str):
+        agent = await self.http.get_agent_by_uuid(uuid)
+        return self._connection._store_agent(agent)
     
