@@ -89,12 +89,12 @@ class Icon(Hashable):
     
     @classmethod
     def _from_url(cls: Type[I], url: str) -> I:
-        icon_regex = re.compile(r'https://media.valorant-api.com/' # base
-                        r'(?P<path>[\w]{1,}\/){1,}' # The path: /agents
-                        r'(?P<uuid>[\w]{8}-([\w]{4}-){3}[\w]{12})' # The uuid of the item
-                        r'/((?:[\w]{1,}/){1,})?' # The path, if there
-                        r'(?P<filename>[\w]{1,})' # the filename: displayicon
-                        r'\.(?P<format>[\w]{1,})') # the file format: .png
+        icon_regex = re.compile(r'https://media.valorant-api.com/'       # base
+                        r'(?P<path>[\w]{1,}\/){1,}'                      # URL Path: EX: /agents
+                        r'(?P<uuid>[\w]{8}-([\w]{4}-){3}[\w]{12})'       # Uuid of item
+                        r'/((?:[\w]{1,}/){1,})?'                         # Path, if there: EX: 
+                        r'(?P<filename>[\w]{1,})'                        # Filename: EX: displayicon
+                        r'\.(?P<format>[\w]{1,})')                       # File format: EX: .png
         
         match = icon_regex.match(url)
         if not match:
