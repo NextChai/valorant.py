@@ -293,4 +293,3 @@ class HTTPClient:
             
         return self.request(Route('GET', f'/buddies/levels/{uuid}'), json=payload)
     
-    
