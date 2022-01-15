@@ -73,3 +73,4 @@ class Agent(TypedDict):
     role: AgentRole
     abilities: List[AgentAbility]
     voiceLine: AgentVoiceLine
+    
