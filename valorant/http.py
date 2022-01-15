@@ -242,7 +242,6 @@ class HTTPClient:
             
             raise RuntimeError('Unreachable code in HTTP handling')
     
-    
     def get_agents(self, *, language: Optional[Language] = MISSING, is_playable_character: Optional[bool] = MISSING) -> Response[List[agent.Agent]]:
         payload = {}
         
