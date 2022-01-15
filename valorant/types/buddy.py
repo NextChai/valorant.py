@@ -25,12 +25,14 @@ from __future__ import annotations
 
 from typing import TypedDict, Optional
 
+
 class BuddyLevel(TypedDict):
     uuid: str
     charmLevel: int
     displayName: str
     displayIcon: Optional[str]
     assetPath: str
+    
     
 class Buddy(TypedDict):
     uuid: str
