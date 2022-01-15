@@ -100,7 +100,6 @@ class Icon(Hashable):
         if not match:
             raise ValueError(f'Invalid URL: {url}')
         
-        print(match.groups())
         path, uuid, _, _, filename, format = match.groups()
         return cls(type=path, uuid=uuid, filename=filename, format=format)
     
