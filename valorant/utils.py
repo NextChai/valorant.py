@@ -116,7 +116,7 @@ def add_logging(func: Callable[P, Union[Awaitable[T], T]]) -> Callable[P, Union[
 
 async def json_or_text(response: ClientResponse) -> Any:
     # For now, we're going to assume that the response is json
-    if response.headers['Content-Type'] == 'application/json;charset=utf-8':
+    if response.headers['Content-Type'] == 'application/json; charset=utf-8':
         return await response.json()
     
     return await response.read()

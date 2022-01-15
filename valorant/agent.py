@@ -23,7 +23,7 @@ SOFTWARE.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Tuple
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
 from .abc import Hashable
 from .media import Icon
@@ -109,8 +109,8 @@ class AgentAbility:
         The display name of the ability.
     description: :class:`str`
         The description of the ability.
-    display_icon: :class:`Icon`
-        The display icon of the ability.
+    display_icon: Optional[:class:`Icon`]
+        The display icon of the ability, if any.
     """
     __slots__: Tuple[str, ...] = (
         'slot', 
@@ -123,7 +123,7 @@ class AgentAbility:
         self.slot: str = data['slot']
         self.display_name: str = data['displayName']
         self.description: str = data['description']
-        self.display_icon: Icon = Icon._from_url(data['displayIcon'])
+        self.display_icon: Optional[Icon] = Icon._from_url(icon) if (icon := data['displayIcon']) else None
 
 
 class AgentRole(Hashable):
@@ -175,18 +175,18 @@ class Agent(Hashable):
         The internal name of the agent, used by developers.
     character_tags: :class:`List[str]`
         A list of tags that describe the agent's character.
-    display_icon: :class:`Icon`
-        The agent's display icon.
-    display_icon_small: :class:`Icon`
-        A smaller version of the agent's display icon.
-    bust_portrait: :class:`Icon`
-        The agent's bust portrait.
-    full_portrait: :class:`Icon`
-        A full portrait of the agent.
-    kill_feed_portrait: :class:`Icon`
-        The icon that shows up in the kill feed.
-    background: :class:`Icon`
-        The backhround of the agent's profile.
+    display_icon: Optional[:class:`Icon`]
+        The agent's display icon, if any.
+    display_icon_small: Optional[:class:`Icon`]
+        A smaller version of the agent's display icon, if any.
+    bust_portrait: Optional[:class:`Icon`]
+        The agent's bust portrait, if any.
+    full_portrait: Optional[:class:`Icon`]
+        A full portrait of the agent, if any.
+    kill_feed_portrait: Optional[:class:`Icon`]
+        The icon that shows up in the kill feed, if any.
+    background: Optional[:class:`Icon`]
+        The backhround of the agent's profile, if any.
     asset_path: :class:`str`
         The path to the agent's asset.
     is_full_portrait_right_facing: :class:`bool`
@@ -197,8 +197,8 @@ class Agent(Hashable):
         Whether the agent is available for testing.
     is_base_content: :class:`bool`
         Whether the agent is a base content.
-    role: :class:`AgentRole`
-        The agent's role. Basically an explanation of what the agent's role is.
+    role: Optional[:class:`AgentRole`]
+        The agent's role. Basically an explanation of what the agent's role is, if any.
     abilities: :class:`List[AgentAbility]`
         A list of abilities that the agent has.
     voice_line: :class:`List[AgentVoiceLine]`
@@ -232,18 +232,18 @@ class Agent(Hashable):
         self.description: str = data['description']
         self.developer_name: str = data['developerName']
         self.character_tags: List[str] = data['characterTags']
-        self.display_icon: Icon = Icon._from_url(data['displayIcon'])
-        self.display_icon_small: Icon = Icon._from_url(data['displayIconSmall'])
-        self.bust_portrait: Icon = Icon._from_url(data['bustPortrait'])
-        self.full_portrait: Icon = Icon._from_url(data['fullPortrait'])
-        self.kill_feed_portrait: Icon = Icon._from_url(data['killfeedPortrait'])
-        self.background: Icon = Icon._from_url(data['background'])
+        self.display_icon: Optional[Icon] = Icon._from_url(icon) if (icon := data['displayIcon']) else None
+        self.display_icon_small: Optional[Icon] = Icon._from_url(small_icon) if (small_icon := data['displayIconSmall']) else None
+        self.bust_portrait: Optional[Icon] = Icon._from_url(bust) if (bust := data['bustPortrait']) else None
+        self.full_portrait: Optional[Icon] = Icon._from_url(full) if (full := data['fullPortrait']) else None
+        self.kill_feed_portrait: Optional[Icon] = Icon._from_url(kill_feed) if (kill_feed := data['killfeedPortrait']) else None
+        self.background: Optional[Icon] = Icon._from_url(backgroud) if (backgroud := data['background']) else None
         self.asset_path: str = data['assetPath']
         self.is_full_portrait_right_facing: bool = data['isFullPortraitRightFacing']
         self.is_playable_character: bool = data['isPlayableCharacter']
         self.is_available_for_test: bool = data['isAvailableForTest']
         self.is_base_content: bool = data['isBaseContent']
-        self.role: AgentRole = AgentRole(data=data['role'], state=state)
+        self.role: Optional[AgentRole] = AgentRole(data=role, state=state) if (role := data['role']) else None
         self.abilities: List[AgentAbility] = [AgentAbility(data=a, state=state) for a in data['abilities']]
         self.voice_line: AgentVoiceLine = AgentVoiceLine(data=data['voiceLine'], state=state)
         

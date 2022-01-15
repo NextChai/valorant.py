@@ -197,7 +197,7 @@ class HTTPClient:
                         
                         if 300 > response.status >= 200:
                             log.debug('%s %s has received %s', method, url, data)
-                            return data
+                            return data['data'] # type: ignore
                         
                         # we are being rate limited
                         if response.status == 429:

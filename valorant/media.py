@@ -92,7 +92,7 @@ class Icon(Hashable):
         icon_regex = re.compile(r'https://media.valorant-api.com/' # base
                         r'(?P<path>[\w]{1,}\/){1,}' # The path: /agents
                         r'(?P<uuid>[\w]{8}-([\w]{4}-){3}[\w]{12})' # The uuid of the item
-                        r'/(([\w]{1,}/){1,})?' # The path, if there
+                        r'/((?:[\w]{1,}/){1,})?' # The path, if there
                         r'(?P<filename>[\w]{1,})' # the filename: displayicon
                         r'\.(?P<format>[\w]{1,})') # the file format: .png
         
@@ -100,7 +100,8 @@ class Icon(Hashable):
         if not match:
             raise ValueError(f'Invalid URL: {url}')
         
-        path, uuid, filename, format = match.groups()
+        print(match.groups())
+        path, uuid, _, _, filename, format = match.groups()
         return cls(type=path, uuid=uuid, filename=filename, format=format)
     
     @cached_property
