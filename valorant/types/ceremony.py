@@ -23,26 +23,11 @@ SOFTWARE.
 """
 from __future__ import annotations
 
-from functools import cached_property
-from typing import Tuple
+from typing import TypedDict
 
-__all__: Tuple[str, ...] = (
-    'Hashable',
-)
- 
 
-class Hashable:
-    
-    @cached_property
-    def id(self) -> str:
-        return getattr(self, 'uuid')
-    
-    def __eq__(self, _o: object) -> bool:
-        return isinstance(_o, self.__class__) and self.id == _o.id
-    
-    def __ne__(self, _o: object) -> bool:
-        return not self.__eq__(_o)
-    
-    def __hash__(self) -> int:
-        return hash(self.id)
+class Ceremony(TypedDict):
+    uuid: str
+    displayName: str
+    assetPath: str
     

@@ -41,6 +41,7 @@ if TYPE_CHECKING:
     from .agent import Agent
     from .enums import Language
     from .buddy import Buddy, BuddyLevel
+    from .ceremony import Ceremony
 
 log = logging.getLogger('valorant.client')
 
@@ -234,7 +235,7 @@ class ValorantClient:
             A list of agents.
         """
         agents_data = await self.http.get_agents(language=language, is_playable_character=is_playable_character)    
-        return [self._connection._store_agent(agent_data) for agent_data in agents_data]
+        return list(map(self._connection._store_agent, agents_data))
 
     async def fetch_agent(self, uuid: str, *, language: Optional[Language] = MISSING) -> Agent:
         """|coro|
@@ -248,8 +249,8 @@ class ValorantClient:
         language: Optional[:class:`Language`]
             The language you wish to fetch the agent in.
         """
-        agent = await self.http.get_agent(uuid, language=language)
-        return self._connection._store_agent(agent)
+        agent_data = await self.http.get_agent(uuid, language=language)
+        return self._connection._store_agent(agent_data)
     
     async def fetch_buddies(self, *, language: Optional[Language] = MISSING) -> List[Buddy]:
         """|coro|
@@ -267,7 +268,7 @@ class ValorantClient:
             A list of buddies.
         """
         buddies_data = await self.http.get_buddies(language=language)
-        return [self._connection._store_buddy(buddy) for buddy in buddies_data]
+        return list(map(self._connection._store_buddy, buddies_data))
     
     async def fetch_buddy(self, uuid: str, *, language: Optional[Language] = MISSING) -> Buddy:
         """|coro|
@@ -286,8 +287,83 @@ class ValorantClient:
         :class:`Buddy`
             The buddy that was fetched,
         """
-        buddy = await self.http.get_buddy(uuid, language=language)
-        return self._connection._store_buddy(buddy)
+        buddy_data = await self.http.get_buddy(uuid, language=language)
+        return self._connection._store_buddy(buddy_data)
     
+    async def fetch_buddy_levels(self, *, language: Optional[Language] = MISSING) -> List[BuddyLevel]:
+        """|coro|
+        
+        Used to fetch all buddy levels.
+        
+        Parameters
+        ----------
+        language: Optional[:class:`Language`]
+            The language you wish to fetch the buddy level in.
+            
+        Returns
+        -------
+        List[:class:`BuddyLevel`]
+            A list of buddy levels.
+        """
+        buddy_levels_data = await self.http.get_buddy_levels(language=language)
+        return list(map(self._connection._store_buddy_level, buddy_levels_data))
+    
+    async def fetch_buddy_level(self, uuid: str, *, language: Optional[Language] = MISSING) -> BuddyLevel:
+        """|coro|
+        
+        Used to fetch a buddy level by it's uuid.
+        
+        Parameters
+        ----------
+        uuid: :class:`str`
+            The UUID of the buddy level you wish to fetch.
+        language: Optional[:class:`Language`]
+            The language you wish to fetch the buddy level in.
+            
+        Returns
+        -------
+        :class:`BuddyLevel`
+            The requested buddy level.
+        """
+        buddy_level_data = await self.http.get_buddy_level(uuid, language=language)
+        return self._connection._store_buddy_level(buddy_level_data)
+    
+    async def fetch_ceremonies(self, *, language: Optional[Language] = MISSING) -> List[Ceremony]:
+        """|coro|
+        
+        Used to fetch all ceremonies that are available.
+        
+        Parameters
+        ----------
+        language: Optional[:class:`Language`]
+            The language you wish to fetch the ceremony in.
+            
+        Returns
+        -------
+        List[:class:`Ceremony`]
+            A list of ceremonies.
+        """
+        ceremonies_data = await self.http.get_ceremonies(language=language)
+        return list(map(self._connection._store_ceremony, ceremonies_data))
+        
+    async def fetch_ceremony(self, uuid: str, *, language: Optional[Language] = MISSING) -> Ceremony:
+        """|coro|
+        
+        Used to fetch a ceremony by it's uuid.
+        
+        Parameters
+        ----------
+        uuid: :class:`str`
+            The UUID of the ceremony you wish to fetch.
+        language: Optional[:class:`Language`]
+            The language you wish to fetch the ceremony in.
+            
+        Returns
+        -------
+        :class:`Ceremony`
+            The requested ceremony.
+        """
+        ceremony_data = await self.http.get_ceremony(uuid, language=language)
+        return self._connection._store_ceremony(ceremony_data)
     
     

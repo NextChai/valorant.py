@@ -57,7 +57,8 @@ if TYPE_CHECKING:
     
     from .types import (
         agent,
-        buddy
+        buddy,
+        ceremony
     )
 
     T = TypeVar('T')
@@ -242,54 +243,46 @@ class HTTPClient:
                 raise HTTPException(response, data)
             
             raise RuntimeError('Unreachable code in HTTP handling')
-    
-    def get_agents(self, *, language: Optional[Language] = MISSING, is_playable_character: Optional[bool] = MISSING) -> Response[List[agent.Agent]]:
+        
+    def _payload_maker(self, **kwargs) -> Dict[Any, Any]:
         payload = {}
         
-        if language is not MISSING:
-            payload['language'] = language.value # type: ignore
-        if is_playable_character is not MISSING:
-            payload['is_playable_character'] = is_playable_character
-        
+        for key, value in kwargs.items():
+            if value is not MISSING:
+                payload[key] = value
+                
+        return payload
+    
+    def get_agents(self, *, language: Optional[Language] = MISSING, is_playable_character: Optional[bool] = MISSING) -> Response[List[agent.Agent]]:
+        payload = self._payload_maker(language=language, is_playable_character=is_playable_character)
         return self.request(Route('GET', '/agents'), json=payload)
     
     def get_agent(self, uuid: str, *, language: Optional[Language] = MISSING) -> Response[agent.Agent]:
-        payload = {}
-        
-        if language is not MISSING:
-            payload['language'] = language.value # type: ignore
-            
+        payload = self._payload_maker(language=language)
         return self.request(Route('GET', f'/agents/{uuid}'), json=payload)
     
     def get_buddies(self, *, language: Optional[Language] = MISSING) -> Response[List[buddy.Buddy]]:
-        payload = {}
-        
-        if language is not MISSING:
-            payload['language'] = language.value # type: ignore
-        
+        payload = self._payload_maker(language=language)
         return self.request(Route('GET', '/buddies'), json=payload)
     
     def get_buddy(self, uuid: str, *, language: Optional[Language] = MISSING) -> Response[buddy.Buddy]:
-        payload = {}
-        
-        if language is not MISSING:
-            payload['language'] = language.value # type: ignore
-            
+        payload = self._payload_maker(language=language)
         return self.request(Route('GET', f'/buddies/{uuid}'), json=payload)
     
     def get_buddy_levels(self, *, language: Optional[Language] = MISSING) -> Response[List[buddy.BuddyLevel]]:
-        payload = {}
-        
-        if language is not MISSING:
-            payload['language'] = language.value # type: ignore
-        
+        payload = self._payload_maker(language=language)
         return self.request(Route('GET', '/buddies/levels'), json=payload)
     
     def get_buddy_level(self, uuid: str, *, language: Optional[Language] = MISSING) -> Response[buddy.BuddyLevel]:
-        payload = {}
-        
-        if language is not MISSING:
-            payload['language'] = language.value # type: ignore
-            
+        payload = self._payload_maker(language=language)  
         return self.request(Route('GET', f'/buddies/levels/{uuid}'), json=payload)
+    
+    def get_ceremonies(self, *, language: Optional[Language] = MISSING) -> Response[List[ceremony.Ceremony]]:
+        payload = self._payload_maker(language=language)
+        return self.request(Route('GET', '/ceremonies'), json=payload)
+    
+    def get_ceremony(self, uuid: str, *, language: Optional[Language] = MISSING) -> Response[ceremony.Ceremony]:
+        payload = self._payload_maker(language=language)
+        return self.request(Route('GET', f'/ceremonies/{uuid}'), json=payload)
+    
     

@@ -27,15 +27,16 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Optional, Tuple,
 
 from .agent import Agent
 from .buddy import Buddy, BuddyLevel
+from .ceremony import Ceremony
 
 if TYPE_CHECKING:
     from .http import HTTPClient
     from .client import ValorantClient
     
     from .types.agent import Agent as AgentPayload
-    from .types.buddy import (
-        Buddy as BuddyPayload,
-    )
+    from .types.buddy import Buddy as BuddyPayload, BuddyLevel as BuddyLevelPayload
+    from .types.ceremony import Ceremony as CeremonyPayload
+    
     
 CSO = TypeVar('CSO', bound='Union[HTTPClient, ValorantClient]')
 T = TypeVar('T')
@@ -75,6 +76,8 @@ def cache_management_for(
 class ConnectionState(Generic[CSO]):
     if TYPE_CHECKING:
         _store_agent: Callable[[AgentPayload], Agent]
+        _store_buddy_level: Callable[[BuddyLevelPayload], BuddyLevel]
+        _store_ceremony: Callable[[CeremonyPayload], Ceremony]
     
     def __init__(self, dispatch: Callable[..., Any]) -> None:
         self.dispatch: Callable[..., Any] = dispatch
@@ -82,7 +85,8 @@ class ConnectionState(Generic[CSO]):
         
         cache_management_for(self, '_agents', 'agent', Agent)
         cache_management_for(self, '_buddies', 'buddy', Buddy)
-        cache_management_for(self, '_buddy_levels', 'buddy_levels', BuddyLevel)
+        cache_management_for(self, '_buddy_levels', 'buddy_level', BuddyLevel)
+        cache_management_for(self, '_ceremonies', 'ceremony', Ceremony)
         
     def _load_cache(self) -> None:
         self._agents: Dict[str, Agent] = {}

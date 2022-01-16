@@ -23,6 +23,7 @@ SOFTWARE.
 """
 from __future__ import annotations
 
+import time
 import asyncio
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Optional, Tuple, TypeVar, Union
 
@@ -111,11 +112,17 @@ def add_logging(func: Callable[P, Union[Awaitable[T], T]]) -> Callable[P, Union[
         >>> 3
     """
     async def _async_wrapped(*args: P.args, **kwargs: P.kwargs) -> Awaitable[T]:
+        start = time.time()
         result = await func(*args, **kwargs)  # type: ignore
+        print(f'{func.__name__} took {time.time() - start:.2f} seconds')
+        
         return result # type: ignore
     
     def _sync_wrapped(*args: P.args, **kwargs: P.kwargs) -> T:
+        start = time.time()
         result = func(*args, **kwargs)
+        print(f'{func.__name__} took {time.time() - start:.2f} seconds')
+        
         return result # type: ignore
     
     return _async_wrapped if asyncio.iscoroutinefunction(func) else _sync_wrapped # type: ignore

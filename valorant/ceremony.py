@@ -23,26 +23,38 @@ SOFTWARE.
 """
 from __future__ import annotations
 
-from functools import cached_property
-from typing import Tuple
+from typing import TYPE_CHECKING, Tuple
+
+from .abc import Hashable
+
+if TYPE_CHECKING:
+    from types.ceremony import Ceremony as CeremonyPayload
+    from .state import ConnectionState
 
 __all__: Tuple[str, ...] = (
-    'Hashable',
+    'Ceremony',
 )
  
-
-class Hashable:
+class Ceremony(Hashable):
+    """
+    Represents a Ceremony.
     
-    @cached_property
-    def id(self) -> str:
-        return getattr(self, 'uuid')
+    Attributes
+    ----------
+    uuid: :class:`str`
+        The UUID of the Ceremony.
+    display_name: :class:`str`
+        The display name of the Ceremony.
+    asset_path: :class:`str`
+        The asset path of the Ceremony.
+    """
+    __slots__: Tuple[str, ...] = (
+        'uuid', 
+        'display_name',
+        'asset_path'
+    )
     
-    def __eq__(self, _o: object) -> bool:
-        return isinstance(_o, self.__class__) and self.id == _o.id
-    
-    def __ne__(self, _o: object) -> bool:
-        return not self.__eq__(_o)
-    
-    def __hash__(self) -> int:
-        return hash(self.id)
-    
+    def __init__(self, *, data: CeremonyPayload, state: ConnectionState) -> None:
+        self.uuid: str = data['uuid']
+        self.display_name: str = data['displayName']
+        self.asset_path: str = data['assetPath']
